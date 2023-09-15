@@ -52,9 +52,9 @@ func main() {
 				cmd = cmd[:len(cmd)-1]
 			}
 		}
-    if rl.IsKeyDown(rlex.KEY_LEFT_CONTROL) && rl.IsKeyDown(rlex.KEY_C) {
-      cmd = ""
-    }
+		if rl.IsKeyDown(rlex.KEY_LEFT_CONTROL) && rl.IsKeyDown(rlex.KEY_C) {
+			cmd = ""
+		}
 
 		// Scrolling
 		lineSkip -= rl.GetMouseWheelMove()
@@ -70,30 +70,41 @@ func main() {
 			}
 		}
 
+		snippets := Snippets{
+			Snippet{
+				Text:  prompt,
+				Font:  fontBold,
+				Color: rl.GetColor(ColorYellow),
+			},
+			Snippet{
+				Text:  cmd,
+				Font:  fontRegular,
+				Color: rl.GetColor(ColorFg),
+			},
+		}
+
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.GetColor(ColorBg))
-		rl.DrawTextEx(fontBold, prompt, rl.Vector2{X: Padding, Y: Padding}, FontSize, FontSpacing, rl.GetColor(ColorYellow))
 
-		var x float32 = rl.MeasureTextEx(fontBold, prompt, FontSize, FontSpacing).X + CharWidth
+		var x float32 = Padding
 		var y float32 = Padding
 		skip := lineSkip
 		cursor := 0
-		text := cmd
-		for cursor < len(text) {
-			char := text[cursor]
-			if x+CharWidth >= WinWidth-Padding || char == '\n' {
+		for cursor < snippets.Len() {
+			char, font, color := snippets.At(cursor)
+			if x+CharWidth >= WinWidth-Padding || char == "\n" {
 				skip--
 				x = Padding
 				if skip < 0 {
 					skip = 0
 					y += CharHeight
 				}
-				if char == '\n' {
+				if char == "\n" {
 					cursor++
 				}
 			} else {
 				if skip == 0 {
-					rl.DrawTextEx(fontRegular, string(char), rl.Vector2{X: x, Y: y}, FontSize, FontSpacing, rl.GetColor(ColorFg))
+					rl.DrawTextEx(font, char, rl.Vector2{X: x, Y: y}, FontSize, FontSpacing, color)
 				}
 				x += CharWidth
 				cursor++
