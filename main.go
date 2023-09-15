@@ -8,12 +8,15 @@ import (
 )
 
 const (
-	WinWidth    = 800
-	WinHeight   = 600
-	ColorBg     = 0x282C34FF
-	ColorFg     = 0xF8F8F2FF
-	FontSize    = 20
-	FontSpacing = 0
+	WinWidth            = 800
+	WinHeight           = 600
+	ColorBg             = 0x282C34FF
+	ColorFg             = 0xF8F8F2FF
+	FontSize            = 20
+	FontSpacing         = 0
+	CharWidth   float32 = 8
+	CharHeight  float32 = 20
+	Padding     float32 = 10
 )
 
 //go:embed assets
@@ -27,18 +30,15 @@ func main() {
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.GetColor(ColorBg))
-    var pad float32 = 10
-		var x float32 = pad
-		var y float32 = pad
-		var charWidth float32 = 8
-		var charHeight float32 = 20
+		var x float32 = Padding
+		var y float32 = Padding
 		for _, char := range text {
-			if x > WinWidth - charWidth - pad || char == '\n' {
-				x = pad
-				y += charHeight
+			if x > WinWidth-CharWidth-Padding || char == '\n' {
+				x = Padding
+				y += CharHeight
 			} else {
 				rl.DrawTextEx(font, string(char), rl.Vector2{X: x, Y: y}, FontSize, FontSpacing, rl.GetColor(ColorFg))
-				x += charWidth
+				x += CharWidth
 			}
 		}
 		rl.EndDrawing()
