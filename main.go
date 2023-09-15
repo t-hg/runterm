@@ -47,7 +47,7 @@ func main() {
 		if rl.IsKeyPressed(rlex.KEY_DOWN) {
 			lineSkip++
 			if lineSkip > maxLineSkip {
-				lineSkip--
+				lineSkip = maxLineSkip
 			}
 		} else if rl.IsKeyPressed(rlex.KEY_UP) {
 			lineSkip--
@@ -75,11 +75,7 @@ func main() {
 				}
 			} else {
 				if skip == 0 {
-          if char == ' ' && x == Padding {
-            // skip
-          } else {
-					  rl.DrawTextEx(font, string(char), rl.Vector2{X: x, Y: y}, FontSize, FontSpacing, rl.GetColor(ColorFg))
-          }
+					rl.DrawTextEx(font, string(char), rl.Vector2{X: x, Y: y}, FontSize, FontSpacing, rl.GetColor(ColorFg))
 				}
 				x += CharWidth
 				cursor++
