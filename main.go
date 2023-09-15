@@ -19,16 +19,28 @@ const (
 //go:embed assets
 var Assets embed.FS
 
-
 func main() {
-	rl.InitWindow(WinWidth, WinHeight, "OneShot")
+	rl.InitWindow(WinWidth, WinHeight, "OneShot-Term")
 	fontData := must.Do2(Assets.ReadFile("assets/iosevka-regular.ttf"))
 	font := rl.LoadFontFromMemory(".ttf", fontData, int32(len(fontData)), FontSize, nil, 0)
-  text := string(must.Do2(Assets.ReadFile("assets/lorem.txt")))
+	text := string(must.Do2(Assets.ReadFile("assets/lorem.txt")))
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.GetColor(ColorBg))
-		rl.DrawTextEx(font, text, rl.Vector2{X: 10, Y: 10}, FontSize, FontSpacing, rl.GetColor(ColorFg))
+    var pad float32 = 10
+		var x float32 = pad
+		var y float32 = pad
+		var charWidth float32 = 8
+		var charHeight float32 = 20
+		for _, char := range text {
+			if x > WinWidth - charWidth - pad || char == '\n' {
+				x = pad
+				y += charHeight
+			} else {
+				rl.DrawTextEx(font, string(char), rl.Vector2{X: x, Y: y}, FontSize, FontSpacing, rl.GetColor(ColorFg))
+				x += charWidth
+			}
+		}
 		rl.EndDrawing()
 	}
 	rl.CloseWindow()
