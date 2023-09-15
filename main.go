@@ -13,6 +13,8 @@ const (
 	WinHeight           = 600
 	ColorBg             = 0x282C34FF
 	ColorFg             = 0xF8F8F2FF
+	ColorYellow         = 0xE5C07BFF
+	ColorRed            = 0xE06C75FF
 	FontSize            = 20
 	FontSpacing         = 0
 	CharWidth   float32 = 8
@@ -24,26 +26,42 @@ const (
 var Assets embed.FS
 
 func main() {
-	rl.InitWindow(WinWidth, WinHeight, "runTerm")
-	fontData := must.Do2(Assets.ReadFile("assets/iosevka-regular.ttf"))
-	font := rl.LoadFontFromMemory(".ttf", fontData, int32(len(fontData)), FontSize, nil, 0)
-  prompt := "Command: "
-  cmd := ""
+	rl.InitWindow(WinWidth, WinHeight, "runterm")
+
+	fontDataRegular := must.Do2(Assets.ReadFile("assets/iosevka-regular.ttf"))
+	fontRegular := rl.LoadFontFromMemory(".ttf", fontDataRegular, int32(len(fontDataRegular)), FontSize, nil, 0)
+	fontDataBold := must.Do2(Assets.ReadFile("assets/iosevka-bold.ttf"))
+	fontBold := rl.LoadFontFromMemory(".ttf", fontDataBold, int32(len(fontDataBold)), FontSize, nil, 0)
+
+	prompt := "Command: "
+	cmd := ""
+
 	var lineSkip float32 = 0
+
 	for !rl.WindowShouldClose() {
-    text := prompt + cmd
-    key := rl.GetCharPressed()
-    for key > 0 {
-      if key >= 32 && key <= 126 {
-        cmd += string(key)
-      }
-      key = rl.GetCharPressed()
+		// command input
+		key := rl.GetCharPressed()
+		for key > 0 {
+			if key >= 32 && key <= 126 {
+				cmd += string(key)
+			}
+			key = rl.GetCharPressed()
+		}
+		if rl.IsKeyPressed(rlex.KEY_BACKSPACE) {
+			if len(cmd) > 0 {
+				cmd = cmd[:len(cmd)-1]
+			}
+		}
+    if rl.IsKeyDown(rlex.KEY_LEFT_CONTROL) && rl.IsKeyDown(rlex.KEY_C) {
+      cmd = ""
     }
-    lineSkip -= rl.GetMouseWheelMove();
-    if lineSkip < 0 {
-      lineSkip = 0
-    } 		
-    if rl.IsKeyPressed(rlex.KEY_DOWN) {
+
+		// Scrolling
+		lineSkip -= rl.GetMouseWheelMove()
+		if lineSkip < 0 {
+			lineSkip = 0
+		}
+		if rl.IsKeyPressed(rlex.KEY_DOWN) {
 			lineSkip++
 		} else if rl.IsKeyPressed(rlex.KEY_UP) {
 			lineSkip--
@@ -51,12 +69,16 @@ func main() {
 				lineSkip = 0
 			}
 		}
+
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.GetColor(ColorBg))
-		var x float32 = Padding
+		rl.DrawTextEx(fontBold, prompt, rl.Vector2{X: Padding, Y: Padding}, FontSize, FontSpacing, rl.GetColor(ColorYellow))
+
+		var x float32 = rl.MeasureTextEx(fontBold, prompt, FontSize, FontSpacing).X + CharWidth
 		var y float32 = Padding
 		skip := lineSkip
 		cursor := 0
+		text := cmd
 		for cursor < len(text) {
 			char := text[cursor]
 			if x+CharWidth >= WinWidth-Padding || char == '\n' {
@@ -71,7 +93,7 @@ func main() {
 				}
 			} else {
 				if skip == 0 {
-					rl.DrawTextEx(font, string(char), rl.Vector2{X: x, Y: y}, FontSize, FontSpacing, rl.GetColor(ColorFg))
+					rl.DrawTextEx(fontRegular, string(char), rl.Vector2{X: x, Y: y}, FontSize, FontSpacing, rl.GetColor(ColorFg))
 				}
 				x += CharWidth
 				cursor++
@@ -79,5 +101,6 @@ func main() {
 		}
 		rl.EndDrawing()
 	}
+
 	rl.CloseWindow()
 }
