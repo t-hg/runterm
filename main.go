@@ -27,9 +27,18 @@ func main() {
 	rl.InitWindow(WinWidth, WinHeight, "runTerm")
 	fontData := must.Do2(Assets.ReadFile("assets/iosevka-regular.ttf"))
 	font := rl.LoadFontFromMemory(".ttf", fontData, int32(len(fontData)), FontSize, nil, 0)
-	text := string(must.Do2(Assets.ReadFile("assets/lorem.txt")))
+  prompt := "Command: "
+  cmd := ""
 	var lineSkip float32 = 0
 	for !rl.WindowShouldClose() {
+    text := prompt + cmd
+    key := rl.GetCharPressed()
+    for key > 0 {
+      if key >= 32 && key <= 126 {
+        cmd += string(key)
+      }
+      key = rl.GetCharPressed()
+    }
     lineSkip -= rl.GetMouseWheelMove();
     if lineSkip < 0 {
       lineSkip = 0
