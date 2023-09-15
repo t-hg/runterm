@@ -1,4 +1,4 @@
-module github.com/t-hg/oneshot-term
+module github.com/t-hg/runterm
 
 go 1.21.1
 

@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/t-hg/oneshot-term/must"
-	"github.com/t-hg/oneshot-term/rlex"
+	"github.com/t-hg/runterm/must"
+	"github.com/t-hg/runterm/rlex"
 )
 
 const (
@@ -31,7 +31,7 @@ func maxLineSkip(text string) float32 {
 }
 
 func main() {
-	rl.InitWindow(WinWidth, WinHeight, "OneShot-Term")
+	rl.InitWindow(WinWidth, WinHeight, "runTerm")
 	fontData := must.Do2(Assets.ReadFile("assets/iosevka-regular.ttf"))
 	font := rl.LoadFontFromMemory(".ttf", fontData, int32(len(fontData)), FontSize, nil, 0)
 	text := string(must.Do2(Assets.ReadFile("assets/lorem.txt")))
