@@ -2,7 +2,6 @@ package main
 
 import (
 	"embed"
-	"strings"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/t-hg/runterm/must"
@@ -24,12 +23,6 @@ const (
 //go:embed assets
 var Assets embed.FS
 
-func maxLineSkip(text string) float32 {
-	lines := strings.Split(text, "\n")
-	maxLineSkip := float32(len(lines))
-	return maxLineSkip + float32(len(strings.Join(lines, "")))/(WinWidth-Padding) + WinHeight/(2*CharHeight)
-}
-
 func main() {
 	rl.InitWindow(WinWidth, WinHeight, "runTerm")
 	fontData := must.Do2(Assets.ReadFile("assets/iosevka-regular.ttf"))
@@ -37,18 +30,12 @@ func main() {
 	text := string(must.Do2(Assets.ReadFile("assets/lorem.txt")))
 	var lineSkip float32 = 0
 	for !rl.WindowShouldClose() {
-    maxLineSkip := maxLineSkip(text)
     lineSkip -= rl.GetMouseWheelMove();
     if lineSkip < 0 {
       lineSkip = 0
-    } else if lineSkip > maxLineSkip {
-      lineSkip = maxLineSkip
-    }
-		if rl.IsKeyPressed(rlex.KEY_DOWN) {
+    } 		
+    if rl.IsKeyPressed(rlex.KEY_DOWN) {
 			lineSkip++
-			if lineSkip > maxLineSkip {
-				lineSkip = maxLineSkip
-			}
 		} else if rl.IsKeyPressed(rlex.KEY_UP) {
 			lineSkip--
 			if lineSkip < 0 {
