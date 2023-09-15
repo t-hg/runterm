@@ -39,3 +39,30 @@ func (snippets Snippets) At(index int) (string, rl.Font, rl.Color) {
   }
   return string(text[index]), font, color
 }
+
+func (snippets Snippets) Draw(lineSkip int) {
+		var x float32 = Padding
+		var y float32 = Padding
+		skip := lineSkip
+		cursor := 0
+		for cursor < snippets.Len() {
+			char, font, color := snippets.At(cursor)
+			if x+CharWidth >= WinWidth-Padding || char == "\n" {
+				skip--
+				x = Padding
+				if skip < 0 {
+					skip = 0
+					y += CharHeight
+				}
+				if char == "\n" {
+					cursor++
+				}
+			} else {
+				if skip == 0 {
+					rl.DrawTextEx(font, char, rl.Vector2{X: x, Y: y}, FontSize, FontSpacing, color)
+				}
+				x += CharWidth
+				cursor++
+			}
+		}
+}

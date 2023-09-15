@@ -36,7 +36,7 @@ func main() {
 	prompt := "Command: "
 	cmd := ""
 
-	var lineSkip float32 = 0
+	var lineSkip = 0
 
 	for !rl.WindowShouldClose() {
 		// command input
@@ -57,7 +57,7 @@ func main() {
 		}
 
 		// Scrolling
-		lineSkip -= rl.GetMouseWheelMove()
+		lineSkip -= int(rl.GetMouseWheelMove())
 		if lineSkip < 0 {
 			lineSkip = 0
 		}
@@ -85,31 +85,7 @@ func main() {
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.GetColor(ColorBg))
-
-		var x float32 = Padding
-		var y float32 = Padding
-		skip := lineSkip
-		cursor := 0
-		for cursor < snippets.Len() {
-			char, font, color := snippets.At(cursor)
-			if x+CharWidth >= WinWidth-Padding || char == "\n" {
-				skip--
-				x = Padding
-				if skip < 0 {
-					skip = 0
-					y += CharHeight
-				}
-				if char == "\n" {
-					cursor++
-				}
-			} else {
-				if skip == 0 {
-					rl.DrawTextEx(font, char, rl.Vector2{X: x, Y: y}, FontSize, FontSpacing, color)
-				}
-				x += CharWidth
-				cursor++
-			}
-		}
+    snippets.Draw(lineSkip)
 		rl.EndDrawing()
 	}
 
